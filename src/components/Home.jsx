@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Container from '@mui/material/Container';
-import axios from 'axios';
 import { Grid, Button, Box } from '@mui/material';
 import ConfirmNotification from './ConfirmNotification';
 import AlertNotification from './AlertNotification';
 import CardComp from './CardComp';
+import { useFetchDataWithParams, useDeleteDataMutation } from '../queries/queries';
 
 
 function Home() {
@@ -14,6 +14,8 @@ function Home() {
     const [deleteId, setDeleteId] = useState(null);
     const [visibleItems, setVisibleItems] = useState(8);
 
+    const [deleteData, {responseDelete}] = useDeleteDataMutation();
+
   // Notification
   const [showSnackbar, setShowSnackbar] = useState(false); 
   
@@ -21,22 +23,19 @@ function Home() {
       setShowSnackbar(true); 
   }; 
 
-  const onCloseClickHandler = (event) => { 
+  const onCloseClickHandler = () => { 
       setShowSnackbar(false); 
   }; 
 
-  const fetchData = async (limit, offset) => {
-    try {
-      const response = await axios.get(`https://jsonplaceholder.typicode.com/posts?_limit=${limit}&_start=${offset}`);
-      setPosts((prevPosts) => [...prevPosts, ...response.data]);
-    } catch (error) {
-      console.log('Error fetching data', error);
-    }
-  };
+  const { data, error, isError, isLoading } = useFetchDataWithParams(visibleItems, 0);
 
   useEffect(() => {
-    fetchData(visibleItems, 0);
-  }, [visibleItems]);
+    if (!isLoading && !isError && data) {
+      setPosts((prevPosts) => [...prevPosts, ...data]);
+    }else {
+      console.log(error);
+    }
+  }, [isLoading, isError, data, error]);
 
   const onDelete = (e) => {
     setDeleteDialogOpen(true);
@@ -47,8 +46,8 @@ function Home() {
   const handleOnConfirm = async (e) => {
     setDeleteDialogOpen(false);
     try {
-      const responseDelete = await axios.delete(`https://jsonplaceholder.typicode.com/posts/${deleteId}`);
-      if(responseDelete.status === 200){
+      const result = await deleteData({ id: deleteId});
+      if(result.data){
         onOpenClickHandler();
         setTimeout(()=>{
           onCloseClickHandler();

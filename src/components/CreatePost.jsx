@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { TextField, TextareaAutosize, Button, Grid } from '@mui/material';
 import Header from '../components/Header';
 import Container from '@mui/material/Container';
-import axios from 'axios';
 import AlertNotification from './AlertNotification';
+import { useAddDataMutation } from '../queries/queries';
 
 function CreatePost() {
 
@@ -21,21 +21,22 @@ function CreatePost() {
         setShowSnackbar(false); 
     }; 
 
+    const [addData, { isError }] = useAddDataMutation();
+
     // Function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
   try {
-    const formResponse = await axios.post(`https://jsonplaceholder.typicode.com/posts`, {
-      title: e.target.title.value,
-      body: e.target.body.value
-    });
-    if(formResponse.status === 201) {
+    const result = await addData({ title: e.target.title.value, body: e.target.body.value });
+
+    if(!isError){
       onOpenClickHandler();
       setTimeout(() => {
         onCloseClickHandler();
       }, 3000);
     }
+
   } catch {
     console.log('Not working');
     }
