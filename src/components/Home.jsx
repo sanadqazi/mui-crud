@@ -6,6 +6,7 @@ import ConfirmNotification from './ConfirmNotification';
 import AlertNotification from './AlertNotification';
 import CardComp from './CardComp';
 import { useFetchDataWithParams, useDeleteDataMutation } from '../queries/queries';
+import Footer from './Footer';
 
 
 function Home() {
@@ -99,6 +100,7 @@ function Home() {
     </Box>
     <ConfirmNotification isOpen={deleteDialogOpen} onConfirm={handleOnConfirm} onCancel={handleOnCancel} />
     <AlertNotification showSnackbar={showSnackbar} onCloseClickHandler={onCloseClickHandler} AlertMessage={'Post deleted successfully'} severity={'success'} />
+    <Footer />
   </>
   )
 }
