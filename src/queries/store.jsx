@@ -1,12 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { api } from './queries';
+import { queriesApi } from './queries';
 
 const store = configureStore({
     reducer: {
-        [api.reducerPath]: api.reducer
+        [queriesApi.reducerPath]: queriesApi.reducer
     },
     middleware: (getDefaultMiddleware) => {
-        getDefaultMiddleware().concat(api.middleware)
+        return getDefaultMiddleware().concat(queriesApi.middleware)
     }
 });
 
